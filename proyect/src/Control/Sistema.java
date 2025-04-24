@@ -1,6 +1,6 @@
-package control;
+package Control;
 
-public class Main {
+public class Sistema {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
     }
