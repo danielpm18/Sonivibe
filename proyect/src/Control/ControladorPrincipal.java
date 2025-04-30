@@ -208,6 +208,7 @@ public class ControladorPrincipal {
         modelo.leerInterpretes();
         modelo.leerCanciones();
         modelo.leerPlaylists();
+        System.out.println(modelo.toString());
         System.out.println("Datos cargados correctamente.");
     }
 

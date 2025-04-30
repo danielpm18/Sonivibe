@@ -77,7 +77,7 @@ public class GestorDatos {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(";");
-                if (datos.length == 4) {
+                if (datos.length == 5) {
                     Playlist playlist = new Playlist(datos[0], datos[1], datos[2]);
                     playlist.setCanciones(datos[3], datos[4]);
                     playlists.add(playlist);
@@ -104,5 +104,15 @@ public class GestorDatos {
 
     public ArrayList<Playlist> getPlaylists() {
         return playlists;
+    }
+
+    @Override
+    public String toString() {
+        return "GestorDatos{" +
+                "usuarios=" + usuarios +
+                ", interpretes=" + interpretes +
+                ", canciones=" + canciones +
+                ", playlists=" + playlists +
+                '}';
     }
 }
