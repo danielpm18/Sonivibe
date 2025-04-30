@@ -1,4 +1,9 @@
-package Modelo;
+package Control;
+
+import Modelo.Cancion;
+import Modelo.Interprete;
+import Modelo.Playlist;
+import Modelo.Usuario;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,10 +14,10 @@ public class GestorDatos {
     private ArrayList<Interprete> interpretes;
     private ArrayList<Cancion> canciones;
     private ArrayList<Playlist> playlists;
-    private static final String ARCHIVO1 = "proyect/src/Data/usuarios.txt";
-    private static final String ARCHIVO2 = "proyect/src/Data/interpretes.txt";
-    private static final String ARCHIVO3 = "proyect/src/Data/canciones.txt";
-    private static final String ARCHIVO4 = "proyect/src/Data/playlists.txt";
+    private static final String ARCHIVO_USUARIO = "proyect/src/Data/usuarios.txt";
+    private static final String ARCHIVO_INTERPRETES = "proyect/src/Data/interpretes.txt";
+    private static final String ARCHIVO_CANCIONES = "proyect/src/Data/canciones.txt";
+    private static final String ARCHIVO_PLAYLISTS = "proyect/src/Data/playlists.txt";
 
     public GestorDatos() {
         usuarios = new ArrayList<>();
@@ -23,7 +28,7 @@ public class GestorDatos {
 
     public void leerUsuarios() {
         usuarios.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO1))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_USUARIO))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(";");
@@ -33,13 +38,12 @@ public class GestorDatos {
             }
         } catch (Exception e) {
             System.err.println("Error al leer usuarios: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void leerInterpretes() {
         interpretes.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO2))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_INTERPRETES))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(";");
@@ -49,13 +53,12 @@ public class GestorDatos {
             }
         } catch (Exception e) {
             System.err.println("Error al leer intérpretes: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void leerCanciones() {
         canciones.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO3))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_CANCIONES))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(";");
@@ -65,13 +68,12 @@ public class GestorDatos {
             }
         } catch (Exception e) {
             System.err.println("Error al leer canciones: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void leerPlaylists() {
         playlists.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO4))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_PLAYLISTS))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(";");
@@ -85,7 +87,6 @@ public class GestorDatos {
             }
         } catch (Exception e) {
             System.err.println("Error al leer playlists: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

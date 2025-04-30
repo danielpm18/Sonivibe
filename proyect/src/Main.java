@@ -1,5 +1,5 @@
 import Control.ControladorPrincipal;
-import Modelo.GestorDatos;
+import Control.GestorDatos;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,9 +1,7 @@
 package Control;
 
-import Modelo.GestorDatos;
 import Modelo.Usuario;
-import Modelo.Cancion;
-import Modelo.Playlist;
+
 import java.util.Scanner;
 
 public class ControladorPrincipal {
