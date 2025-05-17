@@ -1,23 +1,20 @@
 package Modelo;
 
+import java.util.ArrayList;
+
 public class Playlist {
     private String id;
     private String nombre;
-    private String usuarioDni;
-    private String idCancion1;
-    private String idCancion2;
+    private ArrayList<String> cancionesIds;
 
-    public Playlist(String id, String nombre, String usuarioDni) {
+    public Playlist(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
-        this.usuarioDni = usuarioDni;
-        this.idCancion1 = null;
-        this.idCancion2 = null;
+        this.cancionesIds = new ArrayList<>();
     }
 
-    public void setCanciones(String idCancion1, String idCancion2) {
-        this.idCancion1 = idCancion1;
-        this.idCancion2 = idCancion2;
+    public void agregarCancion(String cancionId) {
+        cancionesIds.add(cancionId);
     }
 
     public String getId() {
@@ -28,20 +25,12 @@ public class Playlist {
         return nombre;
     }
 
-    public String getUsuarioDni() {
-        return usuarioDni;
-    }
-
-    public String getIdCancion1() {
-        return idCancion1;
-    }
-
-    public String getIdCancion2() {
-        return idCancion2;
+    public ArrayList<String> getCancionesIds() {
+        return cancionesIds;
     }
 
     @Override
     public String toString() {
-        return nombre + " (Usuario DNI: " + usuarioDni + ")";
+        return nombre;
     }
 }

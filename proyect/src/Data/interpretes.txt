@@ -1,4 +1,5 @@
-INT1;Bryant Myers
-INT2;Eladio Carrion
-INT3;Myke Towers
-INT4;Duki
+INT1;Trap Capos
+INT2;J Balvin
+INT3;Bad Bunny
+INT4;Eminem
+INT5;Myke Towers

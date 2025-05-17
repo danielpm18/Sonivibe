@@ -15,6 +15,14 @@ public class Cancion {
         this.reproducciones = 0;
     }
 
+    public Cancion(String id, String nombre, String interpreteId, String album, int reproducciones) {
+        this.id = id;
+        this.nombre = nombre;
+        this.interpreteId = interpreteId;
+        this.album = album;
+        this.reproducciones = reproducciones;
+    }
+
     public String getId() {
         return id;
     }
@@ -42,5 +50,9 @@ public class Cancion {
     @Override
     public String toString() {
         return nombre + " - " + album;
+    }
+
+    public String toFileString() {
+        return id + ";" + nombre + ";" + interpreteId + ";" + album + ";" + reproducciones;
     }
 }

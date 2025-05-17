@@ -1,4 +1,6 @@
-CAN1;Triste;INT1;La Oscuridad
-CAN2;Coco Chanel;INT2;3MEN2 KBRN
-CAN3;Piensan;INT3;Easy Money Baby
-CAN4;Nueva Era;INT4;AMERI
+CAN1;Quieres Enamorarme;INT1;Trap Capos Season:1;0
+CAN2;Ay Vamos;INT2;La Fmailia B Sides;0
+CAN3;Tenemos Que Hablar;INT3;X100PRE;0
+CAN4;Whithout me;INT4;The Eminem Show;0
+CAN5;DtMF;INT3;DtMF;0
+CAN6;Piensan;INT5;Easy Money Baby;0

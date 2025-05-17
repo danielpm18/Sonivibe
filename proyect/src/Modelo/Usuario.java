@@ -11,12 +11,16 @@ public class Usuario {
         this.contraseña = contraseña;
     }
 
-    public boolean validarContraseña(String input) {
+    public boolean validarContrasena(String input) {
         return input.equals(contraseña) && contraseña.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$");
     }
 
     public String getDni() {
         return dni;
+    }
+
+    public String getContrasena(){
+        return contraseña;
     }
 
     public String getNombre() {
