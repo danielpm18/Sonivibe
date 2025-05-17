@@ -17,12 +17,12 @@ public class VentanaReproduccion extends JFrame {
     private final ControladorPrincipal controlador;
     private JList<Object> listaPrincipal;
     private DefaultListModel<Object> modeloLista;
-    private JButton btnReproducir, btnPausar, btnReanudar;
+    private JButton btnReproducir, btnPausar, btnReanudar, btnSiguiente, btnAnterior;
     private JLabel lblEstado;
     private final String modo; // "CANCION", "PLAYLIST", "INTERPRETE", "ALBUM"
     private boolean seleccionandoCategoria;
     private Playlist playlistSeleccionada;
-    private String interpreteSeleccionado;
+    private Interprete interpreteSeleccionado;
     private String albumSeleccionado;
     private List<Cancion> cancionesAReproducir;
     private int indiceReproduccion; // Índice para controlar el orden de reproducción
@@ -58,19 +58,21 @@ public class VentanaReproduccion extends JFrame {
         btnReproducir = new JButton("Reproducir");
         btnPausar = new JButton("Pausar");
         btnReanudar = new JButton("Reanudar");
+        btnSiguiente = new JButton("Siguiente");
+        btnAnterior = new JButton("Anterior");
 
         panelBotones.add(btnReproducir);
         panelBotones.add(btnPausar);
         panelBotones.add(btnReanudar);
-        if (seleccionandoCategoria) {
-            btnReproducir.setEnabled(false);
-            btnPausar.setEnabled(false);
-            btnReanudar.setEnabled(false);
-        } else {
-            btnReproducir.setEnabled(true);
-            btnPausar.setEnabled(true);
-            btnReanudar.setEnabled(true);
-        }
+        panelBotones.add(btnSiguiente);
+        panelBotones.add(btnAnterior);
+
+        // Deshabilitar inicialmente todos excepto Reproducir en modo categoría
+        btnReproducir.setEnabled(true);
+        btnPausar.setEnabled(false);
+        btnReanudar.setEnabled(false);
+        btnSiguiente.setEnabled(false);
+        btnAnterior.setEnabled(false);
 
         lblEstado = new JLabel("Estado: Detenido");
         panel.add(lblEstado, BorderLayout.NORTH);
@@ -79,11 +81,23 @@ public class VentanaReproduccion extends JFrame {
         btnReproducir.addActionListener(e -> reproducir());
         btnPausar.addActionListener(e -> pausarCancion());
         btnReanudar.addActionListener(e -> reanudarCancion());
+        btnSiguiente.addActionListener(e -> reproducirSiguienteManual());
+        btnAnterior.addActionListener(e -> reproducirAnteriorManual());
         listaPrincipal.addListSelectionListener(e -> {
-            if (!seleccionandoCategoria && !e.getValueIsAdjusting()) {
-                btnReproducir.setEnabled(true);
-            } else if (seleccionandoCategoria && !e.getValueIsAdjusting()) {
-                btnReproducir.setEnabled(true); // Habilitar en modos de categoría
+            if (!e.getValueIsAdjusting()) {
+                if (seleccionandoCategoria) {
+                    btnReproducir.setEnabled(true);
+                    btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
+                    btnSiguiente.setEnabled(false);
+                    btnAnterior.setEnabled(false);
+                } else {
+                    btnReproducir.setEnabled(true);
+                    btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
+                    btnSiguiente.setEnabled(false);
+                    btnAnterior.setEnabled(false);
+                }
             }
         });
 
@@ -112,7 +126,7 @@ public class VentanaReproduccion extends JFrame {
             case ControladorPrincipal.INTERPRETE:
                 for (Interprete interprete : controlador.getModelo().getInterpretes()) {
                     modeloLista.addElement(interprete);
-                    System.out.println("Intérprete cargado: " + interprete.getNombre());
+                    System.out.println("Intérprete cargado: " + interprete.getNombre() + " (ID: " + interprete.getId() + ")");
                 }
                 lblEstado.setText("Estado: Seleccione un intérprete");
                 break;
@@ -171,15 +185,30 @@ public class VentanaReproduccion extends JFrame {
                 System.out.println("No hay canciones en la playlist: " + playlistSeleccionada.getNombre());
             }
         } else if (modo.equals(ControladorPrincipal.INTERPRETE)) {
-            interpreteSeleccionado = (String) seleccionado;
-            System.out.println("Intérprete seleccionado: " + interpreteSeleccionado);
-            for (Cancion cancion : controlador.getModelo().getCanciones()) {
-                if (cancion.getInterpreteId().equals(interpreteSeleccionado)) {
-                    cancionesAReproducir.add(cancion);
-                    System.out.println("Canción añadida: " + cancion.getNombre());
+            if (seleccionado instanceof Interprete) {
+                interpreteSeleccionado = (Interprete) seleccionado;
+                System.out.println("Intérprete seleccionado: " + interpreteSeleccionado.getNombre() + " (ID: " + interpreteSeleccionado.getId() + ")");
+                String interpreteId = interpreteSeleccionado.getId(); // Obtener ID del intérprete
+                if (interpreteId == null || interpreteId.isEmpty()) {
+                    System.out.println("Error: ID del intérprete es nulo o vacío.");
+                    lblEstado.setText("Estado: ID del intérprete no válido");
+                    return;
                 }
+                for (Cancion cancion : controlador.getModelo().getCanciones()) {
+                    System.out.println("Comprobando canción: " + cancion.getNombre() + " (InterpreteId: " + cancion.getInterpreteId() + ")");
+                    if (cancion.getInterpreteId() != null && cancion.getInterpreteId().equals(interpreteId)) {
+                        cancionesAReproducir.add(cancion);
+                        System.out.println("Canción añadida: " + cancion.getNombre());
+                    }
+                }
+                if (cancionesAReproducir.isEmpty()) {
+                    System.out.println("No se encontraron canciones para el intérprete con ID: " + interpreteId);
+                }
+                reproducirSiguiente();
+            } else {
+                lblEstado.setText("Estado: Selección inválida para intérprete");
+                System.out.println("Objeto seleccionado no es un Interprete.");
             }
-            reproducirSiguiente();
         } else if (modo.equals(ControladorPrincipal.ALBUM)) {
             albumSeleccionado = (String) seleccionado;
             System.out.println("Álbum seleccionado: " + albumSeleccionado);
@@ -196,6 +225,8 @@ public class VentanaReproduccion extends JFrame {
             lblEstado.setText("Estado: No hay canciones para reproducir");
             System.out.println("No se encontraron canciones.");
             deshabilitarBotones();
+        } else {
+            habilitarBotonesReproduccion();
         }
     }
 
@@ -216,13 +247,17 @@ public class VentanaReproduccion extends JFrame {
                     if (event.getType() == LineEvent.Type.STOP) {
                         if (indiceReproduccion < cancionesAReproducir.size()) {
                             indiceReproduccion++; // Pasar a la siguiente
-                            reproducirSiguiente();
-                        } else {
-                            lblEstado.setText("Estado: Reproducción completa");
+                            if (indiceReproduccion < cancionesAReproducir.size()) {
+                                reproducirSiguiente();
+                            } else {
+                                lblEstado.setText("Estado: Reproducción completa");
+                                deshabilitarBotonesReproduccion();
+                            }
                         }
                     }
                 });
                 indiceReproduccion++; // Incrementar el índice después de configurar el listener
+                habilitarBotonesReproduccion();
             } else {
                 System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
                 lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
@@ -232,20 +267,103 @@ public class VentanaReproduccion extends JFrame {
         }
     }
 
+    private void reproducirSiguienteManual() {
+        if (indiceReproduccion < cancionesAReproducir.size() - 1) {
+            indiceReproduccion++;
+            Cancion cancion = cancionesAReproducir.get(indiceReproduccion);
+            String idNumerico = cancion.getId().replace("CAN", "");
+            File archivoAudio = new File("proyect/src/Data/" + idNumerico + ".wav");
+            if (archivoAudio.exists()) {
+                controlador.getControladorAudio().reproducir(archivoAudio);
+                lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
+                cancion.incrementarReproducciones();
+                controlador.getModelo().guardarCanciones();
+                controlador.getControladorAudio().getClip().addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        if (indiceReproduccion < cancionesAReproducir.size() - 1) {
+                            indiceReproduccion++;
+                            reproducirSiguienteManual();
+                        } else {
+                            lblEstado.setText("Estado: Reproducción completa");
+                            deshabilitarBotonesReproduccion();
+                        }
+                    }
+                });
+            } else {
+                System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
+                lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
+                reproducirSiguienteManual();
+            }
+        } else {
+            lblEstado.setText("Estado: Fin de la lista");
+        }
+        habilitarBotonesReproduccion();
+    }
+
+    private void reproducirAnteriorManual() {
+        if (indiceReproduccion > 0) {
+            indiceReproduccion--;
+            Cancion cancion = cancionesAReproducir.get(indiceReproduccion);
+            String idNumerico = cancion.getId().replace("CAN", "");
+            File archivoAudio = new File("proyect/src/Data/" + idNumerico + ".wav");
+            if (archivoAudio.exists()) {
+                controlador.getControladorAudio().reproducir(archivoAudio);
+                lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
+                cancion.incrementarReproducciones();
+                controlador.getModelo().guardarCanciones();
+                controlador.getControladorAudio().getClip().addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        if (indiceReproduccion > 0) {
+                            indiceReproduccion--;
+                            reproducirAnteriorManual();
+                        }
+                    }
+                });
+            } else {
+                System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
+                lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
+                reproducirAnteriorManual();
+            }
+        } else {
+            lblEstado.setText("Estado: Inicio de la lista");
+        }
+        habilitarBotonesReproduccion();
+    }
+
     private void pausarCancion() {
         controlador.getControladorAudio().pausar();
         lblEstado.setText("Estado: Pausado");
+        habilitarBotonesReproduccion();
     }
 
     private void reanudarCancion() {
         controlador.getControladorAudio().reanudar();
         lblEstado.setText("Estado: Reproduciendo");
+        habilitarBotonesReproduccion();
+    }
+
+    private void habilitarBotonesReproduccion() {
+        btnPausar.setEnabled(true);
+        btnReanudar.setEnabled(true);
+        btnSiguiente.setEnabled(indiceReproduccion < cancionesAReproducir.size() - 1);
+        btnAnterior.setEnabled(indiceReproduccion > 0);
+        btnReproducir.setEnabled(false); // Deshabilitar Reproducir una vez iniciado
+    }
+
+    private void deshabilitarBotonesReproduccion() {
+        btnPausar.setEnabled(false);
+        btnReanudar.setEnabled(false);
+        btnSiguiente.setEnabled(false);
+        btnAnterior.setEnabled(false);
+        btnReproducir.setEnabled(true); // Habilitar Reproducir para reiniciar
     }
 
     private void deshabilitarBotones() {
         btnReproducir.setEnabled(false);
         btnPausar.setEnabled(false);
         btnReanudar.setEnabled(false);
+        btnSiguiente.setEnabled(false);
+        btnAnterior.setEnabled(false);
     }
 
     public void mostrarVentana() {
