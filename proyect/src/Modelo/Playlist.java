@@ -1,20 +1,25 @@
 package Modelo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Playlist {
     private String id;
     private String nombre;
-    private ArrayList<String> cancionesIds;
+    private List<String> canciones;
 
     public Playlist(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
-        this.cancionesIds = new ArrayList<>();
+        this.canciones = new ArrayList<>();
     }
 
     public void agregarCancion(String cancionId) {
-        cancionesIds.add(cancionId);
+        canciones.add(cancionId);
+    }
+
+    public List<String> getCanciones() {
+        return canciones;
     }
 
     public String getId() {
@@ -23,10 +28,6 @@ public class Playlist {
 
     public String getNombre() {
         return nombre;
-    }
-
-    public ArrayList<String> getCancionesIds() {
-        return cancionesIds;
     }
 
     @Override
