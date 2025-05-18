@@ -1,10 +1,11 @@
-CAN1;Quieres Enamorarme;Trap Capos Season:1;INT1;38
-CAN2;Amarillo;Colores;INT2;11
-CAN3;Tenemos Que Hablar;X100PRE;INT3;61
-CAN4;Whithout me;The Eminem Show;INT4;2
-CAN5;DtMF;DtMF;INT3;4
-CAN6;Piensan;Easy Money Baby;INT5;7
-CAN7;NI BIEN NI MAL;X100PRE;INT3;4
-CAN8;DIOSA;Easy Money Baby;INT5;4
-CAN9;Goosebumps;Birds In Trap Sing McKnight;INT6;3
-CAN10;Morado;Colores;INT2;4
+CAN1;Quieres Enamorarme;Trap Capos Season:1;INT1;7
+CAN2;Amarillo;Colores;INT2;1
+CAN3;Tenemos Que Hablar;X100PRE;INT3;127
+CAN4;DtMF;DtMF;INT3;111
+CAN5;Piensan;Easy Money Baby;INT5;4
+CAN6;NI BIEN NI MAL;X100PRE;INT3;5
+CAN7;DIOSA;Easy Money Baby;INT5;7
+CAN8;Goosebumps;Birds In Trap Sing McKnight;INT6;4
+CAN9;Morado;Colores;INT2;0
+CAN10;Azul;Colores;INT2;0
+CAN11;BAILE INoLVIDABLE;DtMF;INT3;6
