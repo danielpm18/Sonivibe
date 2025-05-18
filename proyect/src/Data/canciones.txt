@@ -1,8 +1,10 @@
-CAN1;Quieres Enamorarme;Trap Capos Season:1;INT1;37
-CAN2;Ay Vamos;La Fmailia B Sides;INT2;31
-CAN3;Tenemos Que Hablar;X100PRE;INT3;29
-CAN4;Whithout me;The Eminem Show;INT4;1
-CAN5;DtMF;DtMF;INT3;9
-CAN6;Piensan;Easy Money Baby;INT5;4
-CAN7;NI BIEN NI MAL;X100PRE;INT3;39
-CAN8;DIOSA;Easy Money Baby;INT5;68
+CAN1;Quieres Enamorarme;Trap Capos Season:1;INT1;38
+CAN2;Amarillo;Colores;INT2;11
+CAN3;Tenemos Que Hablar;X100PRE;INT3;61
+CAN4;Whithout me;The Eminem Show;INT4;2
+CAN5;DtMF;DtMF;INT3;4
+CAN6;Piensan;Easy Money Baby;INT5;7
+CAN7;NI BIEN NI MAL;X100PRE;INT3;4
+CAN8;DIOSA;Easy Money Baby;INT5;4
+CAN9;Goosebumps;Birds In Trap Sing McKnight;INT6;3
+CAN10;Morado;Colores;INT2;4
