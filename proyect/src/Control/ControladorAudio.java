@@ -30,9 +30,7 @@ public class ControladorAudio {
             clipPosition = 0;
             currentFile = archivoAudio;
             isPaused = false;
-            System.out.println("Reproducción iniciada para: " + archivoAudio.getName());
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            System.err.println("Error al reproducir el archivo: " + e.getMessage());
         }
     }
 
@@ -41,7 +39,6 @@ public class ControladorAudio {
             clipPosition = clip.getMicrosecondPosition();
             clip.stop();
             isPaused = true;
-            System.out.println("Reproducción pausada en: " + clipPosition + " microsegundos");
         }
     }
 
@@ -55,16 +52,12 @@ public class ControladorAudio {
                 clip.setMicrosecondPosition(clipPosition);
                 clip.start();
                 isPaused = false;
-                System.out.println("Reproducción reanudada desde: " + clipPosition + " microsegundos");
             } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
                 System.err.println("Error al reanudar la reproducción: " + e.getMessage());
             }
-        } else {
-            System.out.println("No hay nada que reanudar o la reproducción no está pausada.");
         }
     }
 
-    // Método getter para acceder al Clip
     public Clip getClip() {
         return clip;
     }

@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -27,13 +29,13 @@ public class VentanaReproduccion extends JFrame {
     private JLabel lblEstado, lblTiempo, lblImagenCancion;
     private JSlider progressBar;
     private Timer updateTimer;
-    private final String modo; // "CANCION", "PLAYLIST", "INTERPRETE", "ALBUM"
+    private final String modo;
     private boolean seleccionandoCategoria;
     private Playlist playlistSeleccionada;
     private Interprete interpreteSeleccionado;
     private String albumSeleccionado;
     private List<Cancion> cancionesAReproducir;
-    private int indiceReproduccion; // Índice para controlar el orden de reproducción
+    private int indiceReproduccion;
 
     public VentanaReproduccion(ControladorPrincipal controlador, String modo) {
         this.controlador = controlador;
@@ -42,7 +44,7 @@ public class VentanaReproduccion extends JFrame {
                 modo.equals(ControladorPrincipal.INTERPRETE) ||
                 modo.equals(ControladorPrincipal.ALBUM);
         this.cancionesAReproducir = new ArrayList<>();
-        this.indiceReproduccion = 0; // Inicialización del índice
+        this.indiceReproduccion = 0;
         inicializarComponentes();
         cargarDatosIniciales();
     }
@@ -50,7 +52,7 @@ public class VentanaReproduccion extends JFrame {
     private void inicializarComponentes() {
         setTitle("Reproducción - Sonivibe");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(700, 500); // Aumentado para incluir la imagen
+        setSize(700, 500);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
@@ -84,20 +86,20 @@ public class VentanaReproduccion extends JFrame {
             @Override
             public void stateChanged(ChangeEvent e) {
                 if (!progressBar.getValueIsAdjusting() && controlador.getControladorAudio().getClip() != null && !controlador.getControladorAudio().getClip().isRunning()) {
-                    long microseconds = (long) progressBar.getValue() * 1000L; // Convertir a microsegundos
+                    long microseconds = (long) progressBar.getValue() * 1000L;
                     controlador.getControladorAudio().getClip().setMicrosecondPosition(microseconds);
-                    updateProgressBar(); // Actualizar la etiqueta de tiempo después de mover
+                    updateProgressBar();
                 }
             }
         });
 
-        // Etiqueta de tiempo
-        lblTiempo = new JLabel("0:00 / 0:00", SwingConstants.CENTER);
-
-        // Imagen de la canción
+        // Imagen del album
         lblImagenCancion = new JLabel();
         lblImagenCancion.setHorizontalAlignment(SwingConstants.CENTER);
-        lblImagenCancion.setPreferredSize(new Dimension(100, 100)); // Tamaño fijo para la imagen
+        lblImagenCancion.setPreferredSize(new Dimension(100, 100));
+
+        // tiempo
+        lblTiempo = new JLabel("0:00 / 0:00", SwingConstants.CENTER);
 
         // Timer para actualizar la barra y el tiempo
         updateTimer = new Timer(1000, new ActionListener() {
@@ -108,7 +110,6 @@ public class VentanaReproduccion extends JFrame {
         });
         updateTimer.setRepeats(true);
 
-        // Deshabilitar inicialmente todos excepto Reproducir en modo categoría
         btnReproducir.setEnabled(true);
         btnPausar.setEnabled(false);
         btnReanudar.setEnabled(false);
@@ -119,68 +120,105 @@ public class VentanaReproduccion extends JFrame {
         lblEstado = new JLabel("Estado: Detenido");
         panel.add(lblEstado, BorderLayout.NORTH);
 
-        // Panel para la barra de progreso, tiempo e imagen
         JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(lblImagenCancion, BorderLayout.NORTH);
         JPanel progressPanel = new JPanel(new BorderLayout());
         progressPanel.add(progressBar, BorderLayout.CENTER);
         progressPanel.add(lblTiempo, BorderLayout.SOUTH);
-        southPanel.add(progressPanel, BorderLayout.NORTH);
-        southPanel.add(panelBotones, BorderLayout.CENTER);
-        southPanel.add(lblImagenCancion, BorderLayout.SOUTH);
+        southPanel.add(progressPanel, BorderLayout.CENTER);
+        southPanel.add(panelBotones, BorderLayout.SOUTH);
         panel.add(southPanel, BorderLayout.SOUTH);
 
-        btnReproducir.addActionListener(e -> reproducir());
-        btnPausar.addActionListener(e -> pausarCancion());
-        btnReanudar.addActionListener(e -> reanudarCancion());
-        btnSiguiente.addActionListener(e -> reproducirSiguienteManual());
-        btnAnterior.addActionListener(e -> reproducirAnteriorManual());
-        btnAleatorio.addActionListener(e -> reproducirAleatorio());
-        listaPrincipal.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                if (seleccionandoCategoria) {
-                    btnReproducir.setEnabled(true);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnSiguiente.setEnabled(false);
-                    btnAnterior.setEnabled(false);
-                    btnAleatorio.setEnabled(false);
-                } else {
-                    btnReproducir.setEnabled(true);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnSiguiente.setEnabled(false);
-                    btnAnterior.setEnabled(false);
-                    btnAleatorio.setEnabled(false);
+
+        btnReproducir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproducir();
+            }
+        });
+
+        btnPausar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pausarCancion();
+            }
+        });
+
+        btnReanudar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reanudarCancion();
+            }
+        });
+
+        btnSiguiente.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproducirSiguienteManual();
+            }
+        });
+
+        btnAnterior.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproducirAnteriorManual();
+            }
+        });
+
+        btnAleatorio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproducirAleatorio();
+            }
+        });
+
+
+        listaPrincipal.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    if (seleccionandoCategoria) {
+                        btnReproducir.setEnabled(true);
+                        btnPausar.setEnabled(false);
+                        btnReanudar.setEnabled(false);
+                        btnSiguiente.setEnabled(false);
+                        btnAnterior.setEnabled(false);
+                        btnAleatorio.setEnabled(false);
+                    } else {
+                        btnReproducir.setEnabled(true);
+                        btnPausar.setEnabled(false);
+                        btnReanudar.setEnabled(false);
+                        btnSiguiente.setEnabled(false);
+                        btnAnterior.setEnabled(false);
+                        btnAleatorio.setEnabled(false);
+                    }
                 }
             }
         });
 
         add(panel);
+
     }
 
     private void cargarDatosIniciales() {
         modeloLista.clear();
-        System.out.println("Cargando datos iniciales para modo: " + modo);
         switch (modo) {
             case ControladorPrincipal.CANCION:
                 seleccionandoCategoria = false;
                 for (Cancion cancion : controlador.getModelo().getCanciones()) {
                     modeloLista.addElement(cancion);
-                    System.out.println("Canción cargada: " + cancion.getNombre());
                 }
                 lblEstado.setText("Estado: Seleccione una canción");
                 break;
             case ControladorPrincipal.PLAYLIST:
                 for (Playlist playlist : controlador.getModelo().getPlaylists()) {
                     modeloLista.addElement(playlist);
-                    System.out.println("Playlist cargada: " + playlist.getNombre());
                 }
                 lblEstado.setText("Estado: Seleccione una playlist");
                 break;
             case ControladorPrincipal.INTERPRETE:
                 for (Interprete interprete : controlador.getModelo().getInterpretes()) {
                     modeloLista.addElement(interprete);
-                    System.out.println("Intérprete cargado: " + interprete.getNombre() + " (ID: " + interprete.getId() + ")");
                 }
                 lblEstado.setText("Estado: Seleccione un intérprete");
                 break;
@@ -190,7 +228,6 @@ public class VentanaReproduccion extends JFrame {
                     if (!albumes.contains(cancion.getAlbum())) {
                         albumes.add(cancion.getAlbum());
                         modeloLista.addElement(cancion.getAlbum());
-                        System.out.println("Álbum cargado: " + cancion.getAlbum());
                     }
                 }
                 lblEstado.setText("Estado: Seleccione un álbum");
@@ -198,22 +235,19 @@ public class VentanaReproduccion extends JFrame {
         }
         if (modeloLista.isEmpty()) {
             lblEstado.setText("Estado: No hay datos disponibles");
-            System.out.println("No se encontraron datos para el modo: " + modo);
             deshabilitarBotones();
         }
     }
 
     private void reproducir() {
-        System.out.println("Iniciando reproducción en modo: " + modo);
         Object seleccionado = listaPrincipal.getSelectedValue();
         if (seleccionado == null) {
             lblEstado.setText("Estado: Seleccione una opción primero");
-            System.out.println("No se seleccionó ninguna opción.");
             return;
         }
 
         cancionesAReproducir.clear();
-        indiceReproduccion = 0; // Reiniciar índice
+        indiceReproduccion = 0;
 
         if (modo.equals(ControladorPrincipal.CANCION)) {
             if (seleccionado instanceof Cancion) {
@@ -222,54 +256,43 @@ public class VentanaReproduccion extends JFrame {
             }
         } else if (modo.equals(ControladorPrincipal.PLAYLIST)) {
             playlistSeleccionada = (Playlist) seleccionado;
-            System.out.println("Playlist seleccionada: " + playlistSeleccionada.getNombre());
             List<String> cancionesIds = playlistSeleccionada.getCanciones();
             if (cancionesIds != null && !cancionesIds.isEmpty()) {
                 for (String cancionId : cancionesIds) {
                     for (Cancion cancion : controlador.getModelo().getCanciones()) {
                         if (cancion.getId().equals(cancionId)) {
                             cancionesAReproducir.add(cancion);
-                            System.out.println("Canción añadida: " + cancion.getNombre());
                         }
                     }
                 }
                 reproducirSiguiente();
             } else {
                 lblEstado.setText("Estado: No hay canciones en esta playlist");
-                System.out.println("No hay canciones en la playlist: " + playlistSeleccionada.getNombre());
             }
         } else if (modo.equals(ControladorPrincipal.INTERPRETE)) {
             if (seleccionado instanceof Interprete) {
                 interpreteSeleccionado = (Interprete) seleccionado;
-                System.out.println("Intérprete seleccionado: " + interpreteSeleccionado.getNombre() + " (ID: " + interpreteSeleccionado.getId() + ")");
                 String interpreteId = interpreteSeleccionado.getId();
                 if (interpreteId == null || interpreteId.isEmpty()) {
-                    System.out.println("Error: ID del intérprete es nulo o vacío.");
                     lblEstado.setText("Estado: ID del intérprete no válido");
                     return;
                 }
                 for (Cancion cancion : controlador.getModelo().getCanciones()) {
-                    System.out.println("Comprobando canción: " + cancion.getNombre() + " (InterpreteId: " + cancion.getInterpreteId() + ")");
                     if (cancion.getInterpreteId() != null && cancion.getInterpreteId().equals(interpreteId)) {
                         cancionesAReproducir.add(cancion);
-                        System.out.println("Canción añadida: " + cancion.getNombre());
                     }
                 }
                 if (cancionesAReproducir.isEmpty()) {
-                    System.out.println("No se encontraron canciones para el intérprete con ID: " + interpreteId);
                 }
                 reproducirSiguiente();
             } else {
                 lblEstado.setText("Estado: Selección inválida para intérprete");
-                System.out.println("Objeto seleccionado no es un Interprete.");
             }
         } else if (modo.equals(ControladorPrincipal.ALBUM)) {
             albumSeleccionado = (String) seleccionado;
-            System.out.println("Álbum seleccionado: " + albumSeleccionado);
             for (Cancion cancion : controlador.getModelo().getCanciones()) {
                 if (cancion.getAlbum().equals(albumSeleccionado)) {
                     cancionesAReproducir.add(cancion);
-                    System.out.println("Canción añadida: " + cancion.getNombre());
                 }
             }
             reproducirSiguiente();
@@ -277,7 +300,6 @@ public class VentanaReproduccion extends JFrame {
 
         if (cancionesAReproducir.isEmpty()) {
             lblEstado.setText("Estado: No hay canciones para reproducir");
-            System.out.println("No se encontraron canciones.");
             deshabilitarBotones();
         } else {
             habilitarBotonesReproduccion();
@@ -289,17 +311,14 @@ public class VentanaReproduccion extends JFrame {
     private void reproducirSiguiente() {
         if (indiceReproduccion < cancionesAReproducir.size()) {
             Cancion cancion = cancionesAReproducir.get(indiceReproduccion);
-            System.out.println("Reproduciendo: " + cancion.getNombre() + " (ID: " + cancion.getId() + ")");
             String idNumerico = cancion.getId().replace("CAN", "");
-            File archivoAudio = new File("proyect/src/Data/" + idNumerico + ".wav");
+            File archivoAudio = new File("proyect/src/Data/Songs/" + idNumerico + ".wav");
             if (archivoAudio.exists()) {
-                System.out.println("Archivo encontrado: " + archivoAudio.getAbsolutePath());
                 controlador.getControladorAudio().reproducir(archivoAudio);
                 lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
                 cancion.incrementarReproducciones();
                 controlador.getModelo().guardarCanciones();
                 cargarImagenCancion(cancion.getAlbum());
-                // Añadir LineListener para detectar el fin de la reproducción
                 controlador.getControladorAudio().getClip().addLineListener(event -> {
                     if (event.getType() == LineEvent.Type.STOP) {
                         if (indiceReproduccion < cancionesAReproducir.size()) {
@@ -317,13 +336,12 @@ public class VentanaReproduccion extends JFrame {
                         }
                     }
                 });
-                indiceReproduccion++; // Incrementar el índice después de configurar el listener
+                indiceReproduccion++;
                 habilitarBotonesReproduccion();
-                updateProgressBar(); // Actualizar la duración inicial
+                updateProgressBar();
             } else {
-                System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
                 lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
-                indiceReproduccion++; // Pasar a la siguiente
+                indiceReproduccion++;
                 reproducirSiguiente();
             }
         }
@@ -334,7 +352,7 @@ public class VentanaReproduccion extends JFrame {
             indiceReproduccion++;
             Cancion cancion = cancionesAReproducir.get(indiceReproduccion);
             String idNumerico = cancion.getId().replace("CAN", "");
-            File archivoAudio = new File("proyect/src/Data/" + idNumerico + ".wav");
+            File archivoAudio = new File("proyect/src/Data/Songs/" + idNumerico + ".wav");
             if (archivoAudio.exists()) {
                 controlador.getControladorAudio().reproducir(archivoAudio);
                 lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
@@ -357,7 +375,6 @@ public class VentanaReproduccion extends JFrame {
                     }
                 });
             } else {
-                System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
                 lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
                 reproducirSiguienteManual();
             }
@@ -373,7 +390,7 @@ public class VentanaReproduccion extends JFrame {
             indiceReproduccion--;
             Cancion cancion = cancionesAReproducir.get(indiceReproduccion);
             String idNumerico = cancion.getId().replace("CAN", "");
-            File archivoAudio = new File("proyect/src/Data/" + idNumerico + ".wav");
+            File archivoAudio = new File("proyect/src/Data/Songs/" + idNumerico + ".wav");
             if (archivoAudio.exists()) {
                 controlador.getControladorAudio().reproducir(archivoAudio);
                 lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
@@ -389,7 +406,6 @@ public class VentanaReproduccion extends JFrame {
                     }
                 });
             } else {
-                System.out.println("Error: Archivo no encontrado - " + archivoAudio.getAbsolutePath());
                 lblEstado.setText("Estado: Archivo no encontrado para " + cancion.getNombre());
                 reproducirAnteriorManual();
             }
@@ -431,14 +447,12 @@ public class VentanaReproduccion extends JFrame {
         if (clip != null && clip.getMicrosecondLength() > 0) {
             long microsecondPosition = clip.getMicrosecondPosition();
             long microsecondLength = clip.getMicrosecondLength();
-            int progress = (int) ((microsecondPosition * 100) / microsecondLength); // Porcentaje
+            int progress = (int) ((microsecondPosition * 100) / microsecondLength);
             progressBar.setValue(progress);
 
-            // Calcular tiempo transcurrido y duración total en segundos
             long secondsPosition = microsecondPosition / 1000000;
             long secondsLength = microsecondLength / 1000000;
 
-            // Convertir a formato MM:SS
             String tiempoActual = formatTime(secondsPosition);
             String tiempoTotal = formatTime(secondsLength);
             lblTiempo.setText(tiempoActual + " / " + tiempoTotal);
@@ -455,19 +469,16 @@ public class VentanaReproduccion extends JFrame {
     }
 
     private void cargarImagenCancion(String album) {
-        // Reemplazar caracteres no válidos en el nombre del álbum para usarlo como nombre de archivo
         String nombreArchivo = album.replaceAll("[^a-zA-Z0-9.-]", "_");
-        String imagePath = "proyect/src/Data/Imagenes/" + nombreArchivo + ".jpg"; // Ajusta la extensión si usas .png
+        String imagePath = "proyect/src/Data/Imagenes/" + nombreArchivo + ".jpg";
         File imagenArchivo = new File(imagePath);
         if (imagenArchivo.exists()) {
             ImageIcon imagenOriginal = new ImageIcon(imagePath);
             Image imagenEscalada = imagenOriginal.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             ImageIcon imagenFinal = new ImageIcon(imagenEscalada);
             lblImagenCancion.setIcon(imagenFinal);
-            System.out.println("Imagen cargada para el álbum: " + album);
         } else {
-            System.out.println("Imagen no encontrada para el álbum: " + album + " en " + imagePath);
-            lblImagenCancion.setIcon(null); // Si no hay imagen, limpiar el JLabel
+            lblImagenCancion.setIcon(null);
         }
     }
 
@@ -477,7 +488,7 @@ public class VentanaReproduccion extends JFrame {
         btnSiguiente.setEnabled(indiceReproduccion < cancionesAReproducir.size() - 1);
         btnAnterior.setEnabled(indiceReproduccion > 0);
         btnAleatorio.setEnabled(!cancionesAReproducir.isEmpty());
-        btnReproducir.setEnabled(false); // Deshabilitar Reproducir una vez iniciado
+        btnReproducir.setEnabled(false);
         progressBar.setEnabled(true);
     }
 
@@ -487,7 +498,7 @@ public class VentanaReproduccion extends JFrame {
         btnSiguiente.setEnabled(false);
         btnAnterior.setEnabled(false);
         btnAleatorio.setEnabled(false);
-        btnReproducir.setEnabled(true); // Habilitar Reproducir para reiniciar
+        btnReproducir.setEnabled(true);
         progressBar.setEnabled(false);
         updateTimer.stop();
         lblTiempo.setText("0:00 / 0:00");
@@ -514,6 +525,5 @@ public class VentanaReproduccion extends JFrame {
     public void actualizarListaCanciones() {
         cargarDatosIniciales();
         lblEstado.setText("Estado: Lista actualizada");
-        System.out.println("Lista actualizada para modo: " + modo);
     }
 }

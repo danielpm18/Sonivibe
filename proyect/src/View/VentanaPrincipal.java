@@ -21,7 +21,6 @@ public class VentanaPrincipal extends JFrame {
         inicializarLogin();
     }
 
-
     public void addController(ControladorPrincipal controlador) {
         this.controlador = controlador;
     }
@@ -65,7 +64,6 @@ public class VentanaPrincipal extends JFrame {
 
         add(panelLogin);
         setVisible(true);
-        System.out.println("Formulario de login mostrado.");
     }
 
     private void intentarLogin() {
@@ -102,6 +100,7 @@ public class VentanaPrincipal extends JFrame {
         menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
+        // Menú Datos
         JMenu menuDatos = new JMenu("Datos");
         menuDatos.setMnemonic(KeyEvent.VK_D);
 
@@ -115,6 +114,7 @@ public class VentanaPrincipal extends JFrame {
         itemGuardar.setActionCommand(ControladorPrincipal.GUARDAR);
         menuDatos.add(itemGuardar);
 
+        // Menú Reproducir
         JMenu menuReproducir = new JMenu("Reproducir");
         menuReproducir.setMnemonic(KeyEvent.VK_R);
 
@@ -143,11 +143,113 @@ public class VentanaPrincipal extends JFrame {
         itemRandom.setActionCommand(ControladorPrincipal.RANDOM);
         menuReproducir.add(itemRandom);
 
+        // Menú Usuario
+        JMenu menuUsuario = new JMenu("Usuario");
+        menuUsuario.setMnemonic(KeyEvent.VK_U);
+
+        JMenuItem itemCrearUsuario = new JMenuItem("Crear Usuario", KeyEvent.VK_N);
+        itemCrearUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                crearUsuario();
+            }
+        });
+        menuUsuario.add(itemCrearUsuario);
+
+        JMenuItem itemLoginUsuario = new JMenuItem("Login", KeyEvent.VK_L);
+
+        itemCrearUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginUsuario();
+            }
+        });
+        menuUsuario.add(itemLoginUsuario);
+
+        // Menú Playlist
+        JMenu menuPlaylist = new JMenu("Playlist");
+        menuPlaylist.setMnemonic(KeyEvent.VK_P);
+
+        JMenuItem itemCrearPlaylist = new JMenuItem("Crear Playlist", KeyEvent.VK_C);
+        itemCrearPlaylist.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controlador.crearPlaylistInterfaz();
+            }
+        });
+        menuPlaylist.add(itemCrearPlaylist);
+
         menuBar.add(menuDatos);
         menuBar.add(menuReproducir);
+        menuBar.add(menuUsuario);
+        menuBar.add(menuPlaylist);
     }
 
-    public boolean isUsuarioLogueado() {
-        return usuarioLogueado;
+    private void crearUsuario() {
+        JTextField dniField = new JTextField(10);
+        JTextField nombreField = new JTextField(20);
+        JTextField contraseñaField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("DNI:"));
+        panel.add(dniField);
+        panel.add(new JLabel("Nombre:"));
+        panel.add(nombreField);
+        panel.add(new JLabel("Contraseña:"));
+        panel.add(contraseñaField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Crear Nuevo Usuario",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String dni = dniField.getText().trim();
+            String nombre = nombreField.getText().trim();
+            String contraseña = contraseñaField.getText().trim();
+
+            if (dni.isEmpty() || nombre.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean exito = controlador.crearUsuario(dni, nombre, contraseña);
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Usuario creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al crear el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
+
+    private void loginUsuario() {
+        JTextField dniField = new JTextField(10);
+        JTextField contraseñaField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("DNI:"));
+        panel.add(dniField);
+        panel.add(new JLabel("Contraseña:"));
+        panel.add(contraseñaField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Login de Usuario",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String dni = dniField.getText().trim();
+            String contraseña = contraseñaField.getText().trim();
+
+            if (dni.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "DNI y Contraseña son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (controlador.validarUsuario(dni, contraseña)) {
+                usuarioLogueado = true;
+                JOptionPane.showMessageDialog(this, "Login exitoso.", "Login Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "DNI o Contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+
 }

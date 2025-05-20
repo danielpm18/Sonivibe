@@ -13,7 +13,7 @@ public class Main {
                 ControladorPrincipal controlador = new ControladorPrincipal(modelo);
                 VentanaPrincipal ventana = new VentanaPrincipal();
                 ventana.addController(controlador);
-                System.out.println("Ventana principal creada y controlador asignado.");
+
             } catch (Exception e) {
                 System.err.println("Error al inicializar la aplicación: " + e.getMessage());
                 e.printStackTrace();
