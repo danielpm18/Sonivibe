@@ -70,7 +70,7 @@ public class VentanaReproduccion extends JFrame {
         btnReanudar = new JButton("Reanudar");
         btnSiguiente = new JButton("Anterior");
         btnAnterior = new JButton("Siguiente");
-        btnAleatorio = new JButton("Aleatorio");
+        btnAleatorio = new JButton("Repetir");
 
         panelBotones.add(btnReproducir);
         panelBotones.add(btnPausar);

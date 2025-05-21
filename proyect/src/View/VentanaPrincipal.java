@@ -4,6 +4,7 @@ import Control.ControladorPrincipal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 
 public class VentanaPrincipal extends JFrame {
     private ControladorPrincipal controlador;
@@ -19,6 +20,7 @@ public class VentanaPrincipal extends JFrame {
         super("Sonivibe - Login");
         usuarioLogueado = false;
         inicializarLogin();
+
     }
 
     public void addController(ControladorPrincipal controlador) {
@@ -94,7 +96,15 @@ public class VentanaPrincipal extends JFrame {
         revalidate();
         repaint();
         System.out.println("Menú principal mostrado.");
+
+        ImageIcon imagenlogo = new ImageIcon("proyect/src/Data/Imagenes/sonivibe_logo.jpg");
+        JLabel logo = new JLabel(imagenlogo);
+        logo.setBounds(200, 50, imagenlogo.getIconWidth(), imagenlogo.getIconHeight());
+        desktopPane.setBackground(Color.decode("#301934"));
+
+        desktopPane.add(logo);
     }
+
 
     private void crearMenu() {
         menuBar = new JMenuBar();
@@ -113,6 +123,15 @@ public class VentanaPrincipal extends JFrame {
         itemGuardar.addActionListener(controlador);
         itemGuardar.setActionCommand(ControladorPrincipal.GUARDAR);
         menuDatos.add(itemGuardar);
+
+        JMenuItem itemEstadisticas = new JMenuItem("Mostrar Estadísticas", KeyEvent.VK_E);
+        itemEstadisticas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mostrarEstadisticas();
+            }
+        });
+        menuDatos.add(itemEstadisticas);
 
         // Menú Reproducir
         JMenu menuReproducir = new JMenu("Reproducir");
@@ -185,10 +204,62 @@ public class VentanaPrincipal extends JFrame {
         menuBar.add(menuPlaylist);
     }
 
+    private void mostrarEstadisticas() {
+
+        JInternalFrame estadisticasFrame = new JInternalFrame("Estadísticas", true, true, true, true);
+        estadisticasFrame.setSize(400, 300);
+        estadisticasFrame.setLocation(150, 50);
+        estadisticasFrame.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panelEstadisticas = new JPanel(new GridLayout(3, 1, 10, 10));
+        panelEstadisticas.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        int maxInterpreteIndex = 0;
+        for (int i = 1; i < controlador.getReproduccionesPorInterprete().length; i++) {
+            if (controlador.getReproduccionesPorInterprete()[i] > controlador.getReproduccionesPorInterprete()[maxInterpreteIndex]) {
+                maxInterpreteIndex = i;
+            }
+        }
+        String interpreteMasReproducido = controlador.getInterpretes()[maxInterpreteIndex].getNombre();
+        JLabel lblInterprete = new JLabel("Intérprete más reproducido: " + interpreteMasReproducido + " (" + controlador.getReproduccionesPorInterprete()[maxInterpreteIndex] + " reproducciones)");
+        panelEstadisticas.add(lblInterprete);
+
+        // Álbum más reproducido
+        int maxAlbumIndex = 0;
+        for (int i = 1; i < controlador.getReproduccionesPorAlbum().length; i++) {
+            if (controlador.getReproduccionesPorAlbum()[i] > controlador.getReproduccionesPorAlbum()[maxAlbumIndex]) {
+                maxAlbumIndex = i;
+            }
+        }
+        String albumMasReproducido = controlador.getAlbumes()[maxAlbumIndex];
+        JLabel lblAlbum = new JLabel("Álbum más reproducido: " + albumMasReproducido + " (" + controlador.getReproduccionesPorAlbum()[maxAlbumIndex] + " reproducciones)");
+        panelEstadisticas.add(lblAlbum);
+
+        // Top 3 canciones más reproducidas
+        Integer[] indicesCanciones = new Integer[controlador.getCanciones().length];
+        for (int i = 0; i < indicesCanciones.length; i++) {
+            indicesCanciones[i] = i;
+        }
+        Arrays.sort(indicesCanciones, (i1, i2) -> Integer.compare(controlador.getReproduccionesPorCancion()[2], controlador.getReproduccionesPorCancion()[1]));
+
+        JPanel panelTop3 = new JPanel(new GridLayout(3, 1, 0, 5));
+        for (int i = 0; i < Math.min(3, indicesCanciones.length); i++) {
+            int index = indicesCanciones[i];
+            JLabel lblCancion = new JLabel((i + 1) + ". " + controlador.getCanciones()[index].getNombre() + " (" + controlador.getReproduccionesPorCancion()[index] + " reproducciones)");
+            panelTop3.add(lblCancion);
+        }
+        panelEstadisticas.add(panelTop3);
+
+        estadisticasFrame.add(panelEstadisticas);
+        desktopPane.add(estadisticasFrame);
+        estadisticasFrame.setVisible(true);
+
+    }
+
     private void crearUsuario() {
         JTextField dniField = new JTextField(10);
         JTextField nombreField = new JTextField(20);
-        JTextField contraseñaField = new JTextField(10);
+        JTextField contrasenaField = new JTextField(10);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(new JLabel("DNI:"));
@@ -196,7 +267,7 @@ public class VentanaPrincipal extends JFrame {
         panel.add(new JLabel("Nombre:"));
         panel.add(nombreField);
         panel.add(new JLabel("Contraseña:"));
-        panel.add(contraseñaField);
+        panel.add(contrasenaField);
 
         int result = JOptionPane.showConfirmDialog(null, panel, "Crear Nuevo Usuario",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -204,7 +275,7 @@ public class VentanaPrincipal extends JFrame {
         if (result == JOptionPane.OK_OPTION) {
             String dni = dniField.getText().trim();
             String nombre = nombreField.getText().trim();
-            String contraseña = contraseñaField.getText().trim();
+            String contraseña = contrasenaField.getText().trim();
 
             if (dni.isEmpty() || nombre.isEmpty() || contraseña.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);

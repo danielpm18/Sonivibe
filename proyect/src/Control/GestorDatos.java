@@ -145,18 +145,22 @@ public class GestorDatos {
     }
 
     public List<Usuario> getUsuarios() {
+
         return usuarios;
     }
 
     public List<Interprete> getInterpretes() {
+
         return interpretes;
     }
 
     public List<Cancion> getCanciones() {
+
         return canciones;
     }
 
     public List<Playlist> getPlaylists() {
+
         return playlists;
     }
 }

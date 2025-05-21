@@ -442,4 +442,29 @@ public class ControladorPrincipal implements ActionListener {
             default:
         }
     }
+
+    public Interprete[] getInterpretes() {
+        return interpretes;
+    }
+
+    public String[] getAlbumes() {
+        return albumes;
+    }
+
+    public Cancion[] getCanciones() {
+        return canciones;
+    }
+
+    public int[] getReproduccionesPorInterprete() {
+        return reproduccionesPorInterprete;
+    }
+
+    public int[] getReproduccionesPorAlbum() {
+        return reproduccionesPorAlbum;
+    }
+
+    public int[] getReproduccionesPorCancion() {
+        return reproduccionesPorCancion;
+    }
+
 }
