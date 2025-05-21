@@ -5,18 +5,30 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        // Ejecutar la inicialización en el Event Dispatch Thread
-        SwingUtilities.invokeLater(() -> {
-            try {
-                System.out.println("Inicializando aplicación Sonivibe...");
-                GestorDatos modelo = new GestorDatos();
-                ControladorPrincipal controlador = new ControladorPrincipal(modelo);
-                VentanaPrincipal ventana = new VentanaPrincipal();
-                ventana.addController(controlador);
+        // Ejecutamos la aplicación en el hilo de eventos de Swing para garantizar seguridad en la interfaz gráfica
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("Iniciando la aplicación Sonivibe...");
 
-            } catch (Exception e) {
-                System.err.println("Error al inicializar la aplicación: " + e.getMessage());
-                e.printStackTrace();
+                    // Creamos el modelo de datos que gestionará la información
+                    GestorDatos modelo = new GestorDatos();
+
+                    // Creamos el controlador principal, que coordina la lógica entre modelo y vista
+                    ControladorPrincipal controlador = new ControladorPrincipal(modelo);
+
+                    // Creamos la ventana principal de la aplicación (la interfaz gráfica)
+                    VentanaPrincipal ventana = new VentanaPrincipal();
+
+                    // Asociamos el controlador con la ventana para manejar eventos del usuario
+                    ventana.addController(controlador);
+
+                } catch (Exception e) {
+                    // Si ocurre algún error durante la inicialización, lo mostramos por consola
+                    System.err.println("Ocurrió un error al iniciar la aplicación: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         });
     }
