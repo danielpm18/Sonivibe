@@ -204,8 +204,10 @@ public class VentanaPrincipal extends JFrame {
         menuBar.add(menuPlaylist);
     }
 
+    //Muestra canciones mas reproducidas
     private void mostrarEstadisticas() {
 
+        //Crea en la ventana, boton para mirar las estadisticas
         JInternalFrame estadisticasFrame = new JInternalFrame("Estadísticas", true, true, true, true);
         estadisticasFrame.setSize(400, 300);
         estadisticasFrame.setLocation(150, 50);

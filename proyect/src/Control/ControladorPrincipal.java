@@ -402,6 +402,30 @@ public class ControladorPrincipal implements ActionListener {
         }
     }
 
+    public void registrarReproduccion(Cancion cancion) {
+        // Incrementar el contador de reproducciones de la canción (suma 1)
+        cancion.incrementarReproducciones();
+
+        // Actualizar las estadísticas en los arrays
+        int interpreteIndex = obtenerIndiceInterprete(cancion.getInterpreteId());
+        if (interpreteIndex != -1) {
+            reproduccionesPorInterprete[interpreteIndex] += 1; // Suma 1 al intérprete
+        }
+
+        int albumIndex = obtenerIndiceAlbum(cancion.getAlbum());
+        if (albumIndex != -1) {
+            reproduccionesPorAlbum[albumIndex] += 1; // Suma 1 al álbum
+        }
+
+        int cancionIndex = obtenerIndiceCancion(cancion.getId());
+        if (cancionIndex != -1) {
+            reproduccionesPorCancion[cancionIndex] += 1; // Suma 1 a la canción
+        }
+
+        // Guardar los cambios en el archivo canciones.txt
+        modelo.guardarCanciones();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String comando = e.getActionCommand();
