@@ -1,11 +1,11 @@
-CAN1;Quieres Enamorarme;Trap Capos Season:1;INT1;16
-CAN2;Amarillo;Colores;INT2;15
-CAN3;Tenemos Que Hablar;X100PRE;INT3;138
-CAN4;DtMF;DtMF;INT3;115
-CAN5;Piensan;Easy Money Baby;INT5;17
-CAN6;NI BIEN NI MAL;X100PRE;INT3;14
-CAN7;DIOSA;Easy Money Baby;INT5;13
-CAN8;Goosebumps;Birds In Trap Sing McKnight;INT6;20
-CAN9;Morado;Colores;INT2;5
-CAN10;Azul;Colores;INT2;2
-CAN11;BAILE INoLVIDABLE;DtMF;INT3;11
+CAN1;Quieres Enamorarme;INT1;Trap Capos Season:1;8;2021
+CAN2;Amarillo;INT2;Colores;2;2024
+CAN3;Tenemos Que Hablar;INT3;X100PRE;5;1999
+CAN4;DtMF;INT3;DtMF;1;2025
+CAN5;Piensan;INT4;Easy Money Baby;2;2022
+CAN6;NI BIEN NI MAL;INT3;X100PRE;4;2020
+CAN7;DIOSA;INT4;Easy Money Baby;9;2022
+CAN8;Goosebumps;INT5;Birds In Trap Sing McKnight;5;1998
+CAN9;Morado;INT2;Colores;7;2022
+CAN10;Azul;INT2;Colores;2;2022
+CAN11;BAILE INoLVIDABLE;INT3;DtMF;3;2025

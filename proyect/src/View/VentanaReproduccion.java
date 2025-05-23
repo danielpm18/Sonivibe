@@ -68,9 +68,9 @@ public class VentanaReproduccion extends JFrame {
         btnReproducir = new JButton("Reproducir");
         btnPausar = new JButton("Pausar");
         btnReanudar = new JButton("Reanudar");
-        btnSiguiente = new JButton("Anterior");
-        btnAnterior = new JButton("Siguiente");
-        btnAleatorio = new JButton("Repetir");
+        btnSiguiente = new JButton("Siguiente");
+        btnAnterior = new JButton("Anterior");
+        btnAleatorio = new JButton("Aleatorio");
 
         panelBotones.add(btnReproducir);
         panelBotones.add(btnPausar);
@@ -79,7 +79,6 @@ public class VentanaReproduccion extends JFrame {
         panelBotones.add(btnAnterior);
         panelBotones.add(btnAleatorio);
 
-        // Barra de progreso
         progressBar = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
         progressBar.setEnabled(false);
         progressBar.addChangeListener(new ChangeListener() {
@@ -93,23 +92,20 @@ public class VentanaReproduccion extends JFrame {
             }
         });
 
-        // Imagen del album
         lblImagenCancion = new JLabel();
         lblImagenCancion.setHorizontalAlignment(SwingConstants.CENTER);
         lblImagenCancion.setPreferredSize(new Dimension(100, 100));
 
-        // tiempo
         lblTiempo = new JLabel("0:00 / 0:00", SwingConstants.CENTER);
 
-        // Timer para actualizar la barra y el tiempo
         updateTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateProgressBar();
             }
         });
-        updateTimer.setRepeats(true);
 
+        updateTimer.setRepeats(true);
         btnReproducir.setEnabled(true);
         btnPausar.setEnabled(false);
         btnReanudar.setEnabled(false);
@@ -128,7 +124,6 @@ public class VentanaReproduccion extends JFrame {
         southPanel.add(progressPanel, BorderLayout.CENTER);
         southPanel.add(panelBotones, BorderLayout.SOUTH);
         panel.add(southPanel, BorderLayout.SOUTH);
-
 
         btnReproducir.addActionListener(new ActionListener() {
             @Override
@@ -172,7 +167,6 @@ public class VentanaReproduccion extends JFrame {
             }
         });
 
-
         listaPrincipal.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -197,7 +191,6 @@ public class VentanaReproduccion extends JFrame {
         });
 
         add(panel);
-
     }
 
     private void cargarDatosIniciales() {
@@ -258,13 +251,16 @@ public class VentanaReproduccion extends JFrame {
             playlistSeleccionada = (Playlist) seleccionado;
             List<String> cancionesIds = playlistSeleccionada.getCanciones();
             if (cancionesIds != null && !cancionesIds.isEmpty()) {
+                modeloLista.clear();
                 for (String cancionId : cancionesIds) {
                     for (Cancion cancion : controlador.getModelo().getCanciones()) {
                         if (cancion.getId().equals(cancionId)) {
                             cancionesAReproducir.add(cancion);
+                            modeloLista.addElement(cancion);
                         }
                     }
                 }
+                seleccionandoCategoria = false;
                 reproducirSiguiente();
             } else {
                 lblEstado.setText("Estado: No hay canciones en esta playlist");
@@ -277,24 +273,32 @@ public class VentanaReproduccion extends JFrame {
                     lblEstado.setText("Estado: ID del intérprete no válido");
                     return;
                 }
+                modeloLista.clear();
                 for (Cancion cancion : controlador.getModelo().getCanciones()) {
                     if (cancion.getInterpreteId() != null && cancion.getInterpreteId().equals(interpreteId)) {
                         cancionesAReproducir.add(cancion);
+                        modeloLista.addElement(cancion);
                     }
                 }
                 if (cancionesAReproducir.isEmpty()) {
+                    lblEstado.setText("Estado: No hay canciones para este intérprete");
+                } else {
+                    seleccionandoCategoria = false;
+                    reproducirSiguiente();
                 }
-                reproducirSiguiente();
             } else {
                 lblEstado.setText("Estado: Selección inválida para intérprete");
             }
         } else if (modo.equals(ControladorPrincipal.ALBUM)) {
             albumSeleccionado = (String) seleccionado;
+            modeloLista.clear();
             for (Cancion cancion : controlador.getModelo().getCanciones()) {
                 if (cancion.getAlbum().equals(albumSeleccionado)) {
                     cancionesAReproducir.add(cancion);
+                    modeloLista.addElement(cancion);
                 }
             }
+            seleccionandoCategoria = false;
             reproducirSiguiente();
         }
 
@@ -315,14 +319,14 @@ public class VentanaReproduccion extends JFrame {
             File archivoAudio = new File("proyect/src/Data/Songs/" + idNumerico + ".wav");
             if (archivoAudio.exists()) {
                 controlador.getControladorAudio().reproducir(archivoAudio);
-                lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre());
+                lblEstado.setText("Estado: Reproduciendo " + cancion.getNombre()+ " - Año de lanzamiento: " + cancion.getAnoPublicacion());
                 cancion.incrementarReproducciones();
                 controlador.getModelo().guardarCanciones();
                 cargarImagenCancion(cancion.getAlbum());
                 controlador.getControladorAudio().getClip().addLineListener(event -> {
                     if (event.getType() == LineEvent.Type.STOP) {
                         if (indiceReproduccion < cancionesAReproducir.size()) {
-                            indiceReproduccion++; // Pasar a la siguiente
+                            indiceReproduccion++;
                             if (indiceReproduccion < cancionesAReproducir.size()) {
                                 reproducirSiguiente();
                             } else {

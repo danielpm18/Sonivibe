@@ -6,21 +6,19 @@ public class Cancion {
     private String interpreteId;
     private String album;
     private int reproducciones;
+    private int anoPublicacion;
 
-    public Cancion(String id, String nombre, String interpreteId, String album) {
-        this.id = id;
-        this.nombre = nombre;
-        this.interpreteId = interpreteId;
-        this.album = album;
-        this.reproducciones = 0;
-    }
-
-    public Cancion(String id, String nombre, String interpreteId, String album, int reproducciones) {
+    public Cancion(String id, String nombre, String interpreteId, String album, int reproducciones, int anoPublicacion) {
         this.id = id;
         this.nombre = nombre;
         this.interpreteId = interpreteId;
         this.album = album;
         this.reproducciones = reproducciones;
+        this.anoPublicacion = anoPublicacion;
+    }
+
+    public int getAnoPublicacion(){
+        return anoPublicacion;
     }
 
     public String getId() {

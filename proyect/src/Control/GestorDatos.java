@@ -22,7 +22,6 @@ public class GestorDatos {
         playlists = new ArrayList<>();
     }
 
-    // Leer usuarios desde el txt
     public void leerUsuarios() {
         usuarios.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("proyect/src/Data/usuarios.txt"))) {
@@ -38,7 +37,6 @@ public class GestorDatos {
         }
     }
 
-    // Leer intérpretes desde eltxt
     public void leerInterpretes() {
         interpretes.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("proyect/src/Data/interpretes.txt"))) {
@@ -54,15 +52,14 @@ public class GestorDatos {
         }
     }
 
-    // Leer canciones desde el txt
     public void leerCanciones() {
         canciones.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("proyect/src/Data/canciones.txt"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(";");
-                if (partes.length == 5) {
-                    Cancion cancion = new Cancion(partes[0], partes[1], partes[3], partes[2], Integer.parseInt(partes[4]));
+                if (partes.length == 6) {
+                    Cancion cancion = new Cancion(partes[0], partes[1], partes[2], partes[3], Integer.parseInt(partes[4]), Integer.parseInt(partes[5]));
                     canciones.add(cancion);
                 }
             }
@@ -71,7 +68,6 @@ public class GestorDatos {
         }
     }
 
-    // Leer playlists desde el txt.
     public void leerPlaylists() {
         playlists.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("proyect/src/Data/playlists.txt"))) {
@@ -91,7 +87,6 @@ public class GestorDatos {
         }
     }
 
-    // Guardar usuarios en usuarios.txt con formato DNI;Nombre;contraseña
     public void guardarUsuarios() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("proyect/src/Data/usuarios.txt"))) {
             for (Usuario usuario : usuarios) {
@@ -103,7 +98,6 @@ public class GestorDatos {
         }
     }
 
-    // Guardar intérpretes en txt
     public void guardarInterpretes() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("proyect/src/Data/interpretes.txt"))) {
             for (Interprete interprete : interpretes) {
@@ -115,11 +109,11 @@ public class GestorDatos {
         }
     }
 
-    // Guardar canciones en txt.
     public void guardarCanciones() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("proyect/src/Data/canciones.txt"))) {
             for (Cancion cancion : canciones) {
-                bw.write(cancion.getId() + ";" + cancion.getNombre() + ";" + cancion.getAlbum() + ";" + cancion.getInterpreteId() + ";" + cancion.getReproducciones());
+                bw.write(cancion.getId() + ";" + cancion.getNombre() + ";" + cancion.getInterpreteId() + ";" +
+                        cancion.getAlbum() + ";" + cancion.getReproducciones() + ";" + cancion.getAnoPublicacion());
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -127,7 +121,6 @@ public class GestorDatos {
         }
     }
 
-    // Guardar playlists en el txt
     public void guardarPlaylists() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("proyect/src/Data/playlists.txt"))) {
             for (Playlist playlist : playlists) {
@@ -145,22 +138,18 @@ public class GestorDatos {
     }
 
     public List<Usuario> getUsuarios() {
-
         return usuarios;
     }
 
     public List<Interprete> getInterpretes() {
-
         return interpretes;
     }
 
     public List<Cancion> getCanciones() {
-
         return canciones;
     }
 
     public List<Playlist> getPlaylists() {
-
         return playlists;
     }
 }

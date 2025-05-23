@@ -1,6 +1,5 @@
 INT1;Trap Capos
 INT2;J Balvin
 INT3;Bad Bunny
-INT4;Eminem
-INT5;Myke Towers
-INT6;Travis Scott
+INT4;Myke Towers
+INT5;Travis Scott
