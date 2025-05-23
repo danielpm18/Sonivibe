@@ -16,17 +16,17 @@ public class VentanaPrincipal extends JFrame {
     private JLabel lblMensaje;
     private boolean usuarioLogueado;
 
-    //Titulo con el nombre del reproductor
     public VentanaPrincipal() {
         super("Sonivibe - Login");
         usuarioLogueado = false;
         inicializarLogin();
+
     }
-    //Controlador principal
+
     public void addController(ControladorPrincipal controlador) {
         this.controlador = controlador;
     }
-    //Ventana del Login
+
     private void inicializarLogin() {
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -105,11 +105,12 @@ public class VentanaPrincipal extends JFrame {
         desktopPane.add(logo);
     }
 
+
     private void crearMenu() {
         menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        // Menu Datos
+        // Menú Datos
         JMenu menuDatos = new JMenu("Datos");
         menuDatos.setMnemonic(KeyEvent.VK_D);
 
@@ -132,7 +133,7 @@ public class VentanaPrincipal extends JFrame {
         });
         menuDatos.add(itemEstadisticas);
 
-        // Menu Reproducir
+        // Menú Reproducir
         JMenu menuReproducir = new JMenu("Reproducir");
         menuReproducir.setMnemonic(KeyEvent.VK_R);
 
@@ -161,16 +162,30 @@ public class VentanaPrincipal extends JFrame {
         itemRandom.setActionCommand(ControladorPrincipal.RANDOM);
         menuReproducir.add(itemRandom);
 
-        // Menu Usuario
+        // Menú Usuario
         JMenu menuUsuario = new JMenu("Usuario");
         menuUsuario.setMnemonic(KeyEvent.VK_U);
 
         JMenuItem itemCrearUsuario = new JMenuItem("Crear Usuario", KeyEvent.VK_N);
-        itemCrearUsuario.addActionListener(controlador);
-        itemCrearUsuario.setActionCommand(ControladorPrincipal.CREAR_USUARIO);
+        itemCrearUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                crearUsuario();
+            }
+        });
         menuUsuario.add(itemCrearUsuario);
 
-        // Menu Playlist
+        JMenuItem itemLoginUsuario = new JMenuItem("Login", KeyEvent.VK_L);
+
+        itemCrearUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginUsuario();
+            }
+        });
+        menuUsuario.add(itemLoginUsuario);
+
+        // Menú Playlist
         JMenu menuPlaylist = new JMenu("Playlist");
         menuPlaylist.setMnemonic(KeyEvent.VK_P);
 
@@ -188,47 +203,46 @@ public class VentanaPrincipal extends JFrame {
         menuBar.add(menuUsuario);
         menuBar.add(menuPlaylist);
     }
-    //Mostrar las estadisticas de canciones, interpretes, album, y antes del año 2000
+
     private void mostrarEstadisticas() {
+
         JInternalFrame estadisticasFrame = new JInternalFrame("Estadísticas", true, true, true, true);
-        estadisticasFrame.setSize(400, 400);
+        estadisticasFrame.setSize(400, 300);
         estadisticasFrame.setLocation(150, 50);
         estadisticasFrame.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panelEstadisticas = new JPanel(new GridLayout(5, 1, 10, 10));
+        JPanel panelEstadisticas = new JPanel(new GridLayout(3, 1, 10, 10));
         panelEstadisticas.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Interprete más reproducido
         int maxInterpreteIndex = 0;
         for (int i = 1; i < controlador.getReproduccionesPorInterprete().length; i++) {
             if (controlador.getReproduccionesPorInterprete()[i] > controlador.getReproduccionesPorInterprete()[maxInterpreteIndex]) {
                 maxInterpreteIndex = i;
             }
         }
-        String interpreteMasReproducido = controlador.getInterpretes().length > 0 ? controlador.getInterpretes()[maxInterpreteIndex].getNombre() : "N/A";
+        String interpreteMasReproducido = controlador.getInterpretes()[maxInterpreteIndex].getNombre();
         JLabel lblInterprete = new JLabel("Intérprete más reproducido: " + interpreteMasReproducido + " (" + controlador.getReproduccionesPorInterprete()[maxInterpreteIndex] + " reproducciones)");
         panelEstadisticas.add(lblInterprete);
 
-        // Album mas reproducido
+        // Álbum más reproducido
         int maxAlbumIndex = 0;
         for (int i = 1; i < controlador.getReproduccionesPorAlbum().length; i++) {
             if (controlador.getReproduccionesPorAlbum()[i] > controlador.getReproduccionesPorAlbum()[maxAlbumIndex]) {
                 maxAlbumIndex = i;
             }
         }
-        String albumMasReproducido = controlador.getAlbumes().length > 0 ? controlador.getAlbumes()[maxAlbumIndex] : "N/A";
+        String albumMasReproducido = controlador.getAlbumes()[maxAlbumIndex];
         JLabel lblAlbum = new JLabel("Álbum más reproducido: " + albumMasReproducido + " (" + controlador.getReproduccionesPorAlbum()[maxAlbumIndex] + " reproducciones)");
         panelEstadisticas.add(lblAlbum);
 
-        // Top 3 canciones mas reproducidas
+        // Top 3 canciones más reproducidas
         Integer[] indicesCanciones = new Integer[controlador.getCanciones().length];
         for (int i = 0; i < indicesCanciones.length; i++) {
             indicesCanciones[i] = i;
         }
-        Arrays.sort(indicesCanciones, (i1, i2) -> Integer.compare(controlador.getReproduccionesPorCancion()[i2], controlador.getReproduccionesPorCancion()[i1]));
+        Arrays.sort(indicesCanciones, (i1, i2) -> Integer.compare(controlador.getReproduccionesPorCancion()[2], controlador.getReproduccionesPorCancion()[1]));
 
         JPanel panelTop3 = new JPanel(new GridLayout(3, 1, 0, 5));
-        panelTop3.add(new JLabel("Top 3 canciones más reproducidas:"));
         for (int i = 0; i < Math.min(3, indicesCanciones.length); i++) {
             int index = indicesCanciones[i];
             JLabel lblCancion = new JLabel((i + 1) + ". " + controlador.getCanciones()[index].getNombre() + " (" + controlador.getReproduccionesPorCancion()[index] + " reproducciones)");
@@ -236,30 +250,76 @@ public class VentanaPrincipal extends JFrame {
         }
         panelEstadisticas.add(panelTop3);
 
-        // Top 3 canciones mas reproducidas antes del 2000
-        JPanel panel2000 = new JPanel(new GridLayout(4, 1, 0, 5));
-        panel2000.add(new JLabel("Top 3 canciones más reproducidas antes del 2000:"));
-        int count = 0;
-        for (int i = 0; i < indicesCanciones.length && count < 3; i++) {
-            int index = indicesCanciones[i];
-            if (controlador.getCanciones()[index].getAnoPublicacion() < 2000) {
-                JLabel lblCancion = new JLabel((count + 1) + ". " +
-                        controlador.getCanciones()[index].getNombre() +
-                        " (" + controlador.getReproduccionesPorCancion()[index] + " reproducciones, " +
-                        controlador.getCanciones()[index].getAnoPublicacion() + ")");
-                panel2000.add(lblCancion);
-                count++;
-            }
-        }
-        if (count == 0) {
-            JLabel lblNoCanciones = new JLabel("No hay canciones publicadas antes del 2000.");
-            panel2000.add(lblNoCanciones);
-        }
-        panelEstadisticas.add(panel2000);
-
         estadisticasFrame.add(panelEstadisticas);
         desktopPane.add(estadisticasFrame);
         estadisticasFrame.setVisible(true);
+
+    }
+
+    private void crearUsuario() {
+        JTextField dniField = new JTextField(10);
+        JTextField nombreField = new JTextField(20);
+        JTextField contrasenaField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("DNI:"));
+        panel.add(dniField);
+        panel.add(new JLabel("Nombre:"));
+        panel.add(nombreField);
+        panel.add(new JLabel("Contraseña:"));
+        panel.add(contrasenaField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Crear Nuevo Usuario",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String dni = dniField.getText().trim();
+            String nombre = nombreField.getText().trim();
+            String contraseña = contrasenaField.getText().trim();
+
+            if (dni.isEmpty() || nombre.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean exito = controlador.crearUsuario(dni, nombre, contraseña);
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Usuario creado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al crear el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void loginUsuario() {
+        JTextField dniField = new JTextField(10);
+        JTextField contraseñaField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("DNI:"));
+        panel.add(dniField);
+        panel.add(new JLabel("Contraseña:"));
+        panel.add(contraseñaField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Login de Usuario",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String dni = dniField.getText().trim();
+            String contraseña = contraseñaField.getText().trim();
+
+            if (dni.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "DNI y Contraseña son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (controlador.validarUsuario(dni, contraseña)) {
+                usuarioLogueado = true;
+                JOptionPane.showMessageDialog(this, "Login exitoso.", "Login Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "DNI o Contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
 
